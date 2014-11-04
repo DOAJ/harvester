@@ -61,7 +61,12 @@ Now commit those changes and you're ready to begin development with a clean slat
     git commit -m "prep app for development"
     git push origin master
 
-Finally, start your app with
+To start your application, you'll also need to install it into the virtualenv just this first time
+
+    cd myapp
+    pip install -e .
+
+Then, start your app with
 
     python service/web.py
 
