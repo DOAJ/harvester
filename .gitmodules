@@ -1,6 +1,6 @@
-[submodule "portentious"]
-	path = portentious
-	url = https://github.com/richard-jones/portentious
 [submodule "esprit"]
 	path = esprit
 	url = https://github.com/CottageLabs/esprit.git
+[submodule "magnificent-octopus"]
+	path = magnificent-octopus
+	url = https://github.com/richard-jones/magnificent-octopus
