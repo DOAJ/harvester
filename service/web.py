@@ -2,9 +2,9 @@ from flask import Flask, request, abort, render_template, redirect, make_respons
     send_from_directory
 from flask.views import View
 
-from portality.core import app, initialise
-from portality.lib.webapp import custom_static, javascript_config
-from portality.runner import start_from_main
+from octopus.core import app, initialise
+from octopus.lib.webapp import custom_static, javascript_config
+from octopus.runner import start_from_main
 
 import sys
 
@@ -23,15 +23,15 @@ def configure_javascript():
     return javascript_config()
 
 # Autocomplete endpoint
-from portality.modules.es.autocomplete import blueprint as autocomplete
+from octopus.modules.es.autocomplete import blueprint as autocomplete
 app.register_blueprint(autocomplete, url_prefix='/autocomplete')
 
 # Sherpa Fact integration endpoint
-from portality.modules.sherpafact.proxy import blueprint as fact
+from octopus.modules.sherpafact.proxy import blueprint as fact
 app.register_blueprint(fact, url_prefix="/fact")
 
 # Example usages of modules
-from portality.modules.examples.examples import blueprint as examples
+from octopus.modules.examples.examples import blueprint as examples
 app.register_blueprint(examples, url_prefix="/examples")
 
 @app.errorhandler(404)

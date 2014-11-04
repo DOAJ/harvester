@@ -14,11 +14,11 @@ get all the submodules
     git submodule init
     git submodule update
 
-This will initialise and clone the esprit and portentious libraries
+This will initialise and clone the esprit and magnificent octopus libraries
 
-Then get the submodules for portality
+Then get the submodules for Magnificent Octopus
 
-    cd myapp/portentious
+    cd myapp/magnificent-octopus
     git submodule init
     git submodule update
 
@@ -32,12 +32,12 @@ Create your virtualenv and activate it
     virtualenv /path/to/venv
     source /path/tovenv/bin/activate
 
-Install esprit and portality (in that order)
+Install esprit and magnificent octopus (in that order)
 
     cd myapp/esprit
     pip install -e .
     
-    cd myapp/portentious
+    cd myapp/magnificent-octopus
     pip install -e .
     
 Create your local config
@@ -74,15 +74,15 @@ If you want to specify your own root config file, you can use
 
     APP_CONFIG=path/to/rootcfg.py python service/web.py
     
-## Portality
+## Magnificent Octopus
 
-For details about the modules available to you in portality, see the [README](https://github.com/richard-jones/portentious/blob/master/README.md)
+For details about the modules available to you in magnificent octopus, see the [README](https://github.com/richard-jones/magnificent-octopus/blob/master/README.md)
 
-If you want to make local modifications to your portality repo, with a view to merging them back into the master at some point in the future, then do the following
+If you want to make local modifications to your magnificent octopus repo, with a view to merging them back into the master at some point in the future, then do the following
 
-First checkout your own branch as a clone of the master branch, and push it into the portality repo:
+First checkout your own branch as a clone of the master branch, and push it into the magnificent-octopus repo:
 
-    cd myapp/portentious
+    cd myapp/magnificent-octopus
     git checkout master
     git checkout myapp
     git push origin myapp
