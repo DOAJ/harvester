@@ -39,8 +39,6 @@ def page_not_found(e):
 
 
 if __name__ == "__main__":
-    initialise()
-
     pycharm_debug = app.config.get('DEBUG_PYCHARM', False)
     if len(sys.argv) > 1:
         if sys.argv[1] == '-d':
@@ -52,6 +50,7 @@ if __name__ == "__main__":
         pydevd.settrace(app.config.get('DEBUG_SERVER_HOST', 'localhost'), port=app.config.get('DEBUG_SERVER_PORT', 51234), stdoutToServer=True, stderrToServer=True)
         print "STARTED IN REMOTE DEBUG MODE"
 
+    initialise()
     app.run(host='0.0.0.0', debug=app.config['DEBUG'], port=app.config['PORT'], threaded=False)
     # app.run(host=app.config.get("HOST", "0.0.0.0"), debug=app.config.get("DEBUG", False), port=app.config.get("PORT", 5000), threaded=True)
     # start_from_main(app)
