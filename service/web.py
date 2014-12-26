@@ -1,12 +1,28 @@
-from flask import Flask, request, abort, render_template, redirect, make_response, jsonify, send_file, \
-    send_from_directory
-from flask.views import View
+from octopus.core import app, initialise, add_configuration
 
-from octopus.core import app, initialise
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--debug", action="store_true", help="pycharm debug support enable")
+    parser.add_argument("-c", "--config", help="additional configuration to load (e.g. for testing)")
+    args = parser.parse_args()
+
+    if args.config:
+        add_configuration(app, args.config)
+
+    pycharm_debug = app.config.get('DEBUG_PYCHARM', False)
+    if args.debug:
+        pycharm_debug = True
+
+    if pycharm_debug:
+        app.config['DEBUG'] = False
+        import pydevd
+        pydevd.settrace(app.config.get('DEBUG_SERVER_HOST', 'localhost'), port=app.config.get('DEBUG_SERVER_PORT', 51234), stdoutToServer=True, stderrToServer=True)
+        print "STARTED IN REMOTE DEBUG MODE"
+
+
+from flask import render_template
 from octopus.lib.webapp import custom_static
-from octopus.runner import start_from_main
-
-import sys
 
 @app.route("/")
 def root():
@@ -39,19 +55,6 @@ def page_not_found(e):
 
 
 if __name__ == "__main__":
-    pycharm_debug = app.config.get('DEBUG_PYCHARM', False)
-    if len(sys.argv) > 1:
-        if sys.argv[1] == '-d':
-            pycharm_debug = True
-
-    if pycharm_debug:
-        app.config['DEBUG'] = False
-        import pydevd
-        pydevd.settrace(app.config.get('DEBUG_SERVER_HOST', 'localhost'), port=app.config.get('DEBUG_SERVER_PORT', 51234), stdoutToServer=True, stderrToServer=True)
-        print "STARTED IN REMOTE DEBUG MODE"
-
     initialise()
     app.run(host='0.0.0.0', debug=app.config['DEBUG'], port=app.config['PORT'], threaded=False)
-    # app.run(host=app.config.get("HOST", "0.0.0.0"), debug=app.config.get("DEBUG", False), port=app.config.get("PORT", 5000), threaded=True)
-    # start_from_main(app)
 
