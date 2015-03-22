@@ -51,9 +51,12 @@ Update setup.py, to include your app's name and description
 
     vim setup.py
 
-Empty this README.md file, and get ready to fill it with your own amazing documentation
+Replace this README.md with the INSTALL.md file which contains your application's installation instructions
 
-    echo "" > README.md
+    rm README.md
+    mv INSTALL.md README.md
+
+You should also edit the new README.md file and fill in all the blanks/details.
 
 Now commit those changes and you're ready to begin development with a clean slate
 
