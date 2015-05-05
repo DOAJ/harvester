@@ -20,7 +20,9 @@ if __name__ == "__main__":
         pydevd.settrace(app.config.get('DEBUG_SERVER_HOST', 'localhost'), port=app.config.get('DEBUG_SERVER_PORT', 51234), stdoutToServer=True, stderrToServer=True)
         print "STARTED IN REMOTE DEBUG MODE"
 
+    initialise()
 
+# most of the imports should be done here, after initialise()
 from flask import render_template
 from octopus.lib.webapp import custom_static
 
@@ -51,12 +53,12 @@ app.register_blueprint(query, url_prefix="/query")
 from octopus.modules.sherpafact.proxy import blueprint as fact
 app.register_blueprint(fact, url_prefix="/fact")
 
-# Example usages of modules
-from octopus.modules.examples.examples import blueprint as examples
-app.register_blueprint(examples, url_prefix="/examples")
-
 from octopus.modules.clientjs.fragments import blueprint as fragments
 app.register_blueprint(fragments, url_prefix="/frag")
+
+# adding account management, which enables the login functionality
+from octopus.modules.account.account import blueprint as account
+app.register_blueprint(account, url_prefix="/account")
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -64,6 +66,5 @@ def page_not_found(e):
 
 
 if __name__ == "__main__":
-    initialise()
     app.run(host='0.0.0.0', debug=app.config['DEBUG'], port=app.config['PORT'], threaded=False)
 
