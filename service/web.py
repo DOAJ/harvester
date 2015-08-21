@@ -27,7 +27,7 @@ from flask import render_template
 from octopus.lib.webapp import custom_static
 
 @app.route("/")
-def root():
+def index():
     return render_template("index.html")
 
 # this allows us to override the standard static file handling with our own dynamic version
