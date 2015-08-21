@@ -27,19 +27,6 @@ Change the origin url, so you can push code to your own repo:
     git remote set-url origin <git url of new repo home>
     git push -u origin master
 
-Create your virtualenv and activate it
-
-    virtualenv /path/to/venv
-    source /path/tovenv/bin/activate
-
-Install esprit and magnificent octopus (in that order)
-
-    cd myapp/esprit
-    pip install -e .
-    
-    cd myapp/magnificent-octopus
-    pip install -e .
-    
 Create your local config
 
     cd myapp
@@ -64,6 +51,27 @@ Now commit those changes and you're ready to begin development with a clean slat
     git commit -m "prep app for development"
     git push origin master
 
+Create your virtualenv and activate it
+
+    virtualenv /path/to/venv
+    source /path/tovenv/bin/activate
+
+## Installing locally for development
+
+Either use the requirements.txt file:
+
+    pip install -r requirements.txt
+
+Or follow these instructions:
+
+Install esprit and magnificent octopus (in that order)
+
+    cd myapp/esprit
+    pip install -e .
+    
+    cd myapp/magnificent-octopus
+    pip install -e .
+
 To start your application, you'll also need to install it into the virtualenv just this first time
 
     cd myapp
@@ -76,7 +84,23 @@ Then, start your app with
 If you want to specify your own root config file, you can use
 
     APP_CONFIG=path/to/rootcfg.py python service/web.py
+
+## Git Flow
+
+To use git flow for development and release procedures, initialise in the local app directory
+
+    git flow init
+
+You should accept all the default naming conventions.
+
+Then push the new develop branch to github
     
+    git push origin develop
+    
+Finally on github go to the app settings page and change the default branch to "develop":
+
+    https://github.com/CottageLabs/[your app]/settings
+
 ## Magnificent Octopus
 
 For details about the modules available to you in magnificent octopus, see the [README](https://github.com/richard-jones/magnificent-octopus/blob/master/README.md)
