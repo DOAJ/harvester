@@ -43,3 +43,16 @@ SECRET_KEY = "super-secret-key"
 from octopus.lib import paths
 STORE_LOCAL_DIR = paths.rel2abs(__file__, "..", "service", "tests", "local_store", "live")
 STORE_TMP_DIR = paths.rel2abs(__file__, "..", "service", "tests", "local_store", "tmp")
+
+##############################################
+# DOAJ client configuration
+
+# this is the default anyway, but reminds us to point it to the right place for testing
+DOAJ_API_BASE_URL = "https://doaj.org/api/v1/"
+
+##############################################
+# Application-specific configuration
+
+HARVESTERS = [
+    "service.models.EPMCHarvester"
+]
