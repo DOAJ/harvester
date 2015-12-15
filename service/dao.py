@@ -27,8 +27,8 @@ class ISSNQuery(object):
             "query" : {
                 "bool" : {
                     "must" : [
-                        {"issn.exact", self.issn},
-                        {"account.exact", self.account}
+                        {"term" : {"issn.exact" : self.issn}},
+                        {"term" : {"account.exact" : self.account}}
                     ]
                 }
             }
@@ -43,7 +43,7 @@ class AccountQuery(object):
             "query" : {
                 "bool" : {
                     "must" : [
-                        {"account.exact" : self.account}
+                        {"term" : {"account.exact" : self.account}}
                     ]
                 }
             }

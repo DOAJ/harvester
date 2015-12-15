@@ -39,8 +39,8 @@ class HarvesterWorkflow(object):
         hss = [hs for hs in models.HarvestState.find_by_account(account_id)]    # read straight away, as the iterator can timeout
         for hs in hss:
             if hs.issn not in issns and not hs.suspended:
-                state.suspend()
-                state.save(blocking=True)
+                hs.suspend()
+                hs.save(blocking=True)
 
     @classmethod
     def process_issn(cls, issn):
