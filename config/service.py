@@ -56,3 +56,5 @@ DOAJ_API_BASE_URL = "https://doaj.org/api/v1/"
 HARVESTERS = [
     "service.models.EPMCHarvester"
 ]
+
+INITIAL_HARVEST_DATE = "1970-01-01T00:00:00Z"

@@ -1,5 +1,7 @@
 from octopus.modules.doaj import client as doajclient
 from service import models
+from octopus.core import app
+from octopus.lib import plugin
 
 class HarvesterWorkflow(object):
 
@@ -16,7 +18,7 @@ class HarvesterWorkflow(object):
         HarvesterWorkflow.process_issn_states(account_id, issns)
 
         for issn in issns:
-            HarvesterWorkflow.process_issn(issn)
+            HarvesterWorkflow.process_issn(account_id, issn)
 
     @classmethod
     def process_issn_states(cls, account_id, issns):
@@ -43,9 +45,24 @@ class HarvesterWorkflow(object):
                 hs.save(blocking=True)
 
     @classmethod
-    def process_issn(cls, issn):
-        state = models.HarvestState.find_by_issn(issn)
+    def process_issn(cls, account_id, issn):
+        state = models.HarvestState.find_by_issn(account_id, issn)
+
+        # if this issn is suspended, don't process it
+        if state.suspended:
+            return
+
+        # get all the plugins that we need to run
+        harvesters = app.config.get("HARVESTERS", [])
+        for h in harvesters:
+            p = plugin.load_class(h)()
+            lh = state.get_last_harvest(p.get_name())
+            if lh is None:
+                lh = app.config.get("INITIAL_HARVEST_DATE")
+
+            for article in p.iterate(issn, lh):
+                HarvesterWorkflow.process_article(article)
 
     @classmethod
     def process_article(cls, article):
-        pass
+        print article.data

@@ -1,8 +1,10 @@
 from octopus.lib import dataobj
 from service import dao
-from copy import deepcopy
 
 class HarvesterPlugin(object):
+    def get_name(self):
+        raise NotImplementedError()
+
     def iterate(self, issn, since, to=None):
         raise NotImplementedError()
 
@@ -78,6 +80,13 @@ class HarvestState(dataobj.DataObj, dao.HarvestStateDAO):
 
     def reactivate(self):
         self.status = "active"
+
+    def get_last_harvest(self, harvester_name):
+        lhs = self._get_list("last_harvest")
+        for lh in lhs:
+            if lh.get("plugin_name") == harvester_name:
+                return lh.get("date")
+        return None
 
     def prep(self):
         if self.status is None:
