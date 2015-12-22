@@ -6,6 +6,8 @@ from octopus.modules.es.testindex import ESTestCase
 from service.tests import fixtures
 from service import models, workflow
 import time
+from octopus.core import app
+from octopus.lib import plugin, dates
 
 class TestState(ESTestCase):
     def setUp(self):
@@ -120,4 +122,32 @@ class TestState(ESTestCase):
         hs4 = models.HarvestState.find_by_issn("abcdefg", "4444-4444")
         assert hs4 is not None
         assert hs4.suspended
+
+    def test_04_last_harvest(self):
+        hs = models.HarvestState()
+        hs.account = "abcdefg"
+        hs.issn = "2222-2222"
+        hs.save()
+
+        # first check that we don't get a last harvest date for anyone
+        harvesters = app.config.get("HARVESTERS", [])
+        plugins = []
+        for h in harvesters:
+            p = plugin.load_class(h)()
+            plugins.append(p)
+            lh = hs.get_last_harvest(p.get_name())
+            assert lh is None
+
+        lhs = {}
+        for p in plugins:
+            lhs[p.get_name()] = dates.random_date()
+            hs.set_harvested(p.get_name(), lhs[p.get_name()])
+
+        hs.save(blocking=True)
+
+        hs2 = models.HarvestState.find_by_issn("abcdefg", "2222-2222")
+        for p in plugins:
+            lh = hs2.get_last_harvest(p.get_name())
+            assert lh == lhs[p.get_name()]
+
 

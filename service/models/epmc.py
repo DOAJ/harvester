@@ -29,11 +29,45 @@ class EPMCHarvester(HarvesterPlugin):
             # note that we use date_sort=True as a weak proxy for ordering by updated date (it actually orders by publication date, which may be partially the same as updated date)
             query = queries.oa_issn_updated(issn, fr, date_sort=True)
             for record in client.EuropePMC.complex_search_iterator(query):
-                article = self._crosswalk(record)
+                article = self.crosswalk(record)
                 yield article
 
-    def _crosswalk(self, record):
+    def crosswalk(self, record):
         article = doaj.Article()
-        article.bibjson = {"title" : record.title}
+        article.bibjson = {}
+
+        bj = article.bibjson
+        bj.journal = {}
+        journal = bj.journal
+
+        bj.title = record.title
+        article.add_identifier("doi", record.doi)
+        article.add_identifier("pissn", record.issn)
+        article.add_identifier("eissn", record.essn)
+        journal.volume = record.journal_volume
+        journal.number = record.journal_issue
+        journal.title = record.journal
+        journal.language = record.language
+        bj.year = record.year_of_publication
+        bj.month = record.month_of_publication
+        journal.start_page = record.start_page
+        journal.end_page = record.end_page
+        article.add_link("fulltext", record.get_first_fulltext_url())
+        bj.abstract = record.abstract
+
+        for a in record.authors:
+            fn = a.get("firstName")
+            ln = a.get("lastName")
+            if fn is None and ln is None:
+                continue
+            n = ""
+            if fn is not None:
+                n += fn
+            if ln is not None:
+                if n != "":
+                    n += " "
+                n += ln
+            article.add_author(name=n)
+
         return article
 

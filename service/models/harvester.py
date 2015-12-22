@@ -1,5 +1,6 @@
 from octopus.lib import dataobj
 from service import dao
+from octopus.lib import dates
 
 class HarvesterPlugin(object):
     def get_name(self):
@@ -84,9 +85,18 @@ class HarvestState(dataobj.DataObj, dao.HarvestStateDAO):
     def get_last_harvest(self, harvester_name):
         lhs = self._get_list("last_harvest")
         for lh in lhs:
-            if lh.get("plugin_name") == harvester_name:
+            if lh.get("plugin") == harvester_name:
                 return lh.get("date")
         return None
+
+    def set_harvested(self, harvester_name, last_harvest_date=None):
+        # first ensure we have a last harvest date, and that it's in the right format
+        if last_harvest_date is None:
+            last_harvest_date = dates.now()
+        last_harvest_date = dates.reformat(last_harvest_date)
+
+        self._delete_from_list("last_harvest", matchsub={"plugin" : harvester_name})
+        self._add_to_list("last_harvest", {"plugin" : harvester_name, "date" : last_harvest_date})
 
     def prep(self):
         if self.status is None:
