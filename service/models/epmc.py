@@ -30,7 +30,7 @@ class EPMCHarvester(HarvesterPlugin):
             query = queries.oa_issn_updated(issn, fr, date_sort=True)
             for record in client.EuropePMC.complex_search_iterator(query):
                 article = self.crosswalk(record)
-                yield article
+                yield article, fr
 
     def crosswalk(self, record):
         article = doaj.Article()

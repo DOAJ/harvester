@@ -7,7 +7,7 @@ from unittest import TestCase
 from service.tests import fixtures
 from service.models import epmc
 
-class TestDOAJ(TestCase):
+class TestEPMC(TestCase):
     def setUp(self):
         pass
 
@@ -34,6 +34,8 @@ class TestDOAJ(TestCase):
         assert article.get_link("fulltext") == "http://europepmc.org/articles/PMC3042601?pdf=render"
         assert article.bibjson.abstract.startswith("The 1000 Genomes Project aims to provide")
         assert len(article.bibjson.author) == 5
+
+        assert article.is_api_valid()
 
         # now just check that an empty document also works
         md = fixtures.EPMCFixtureFactory.epmc_empty_metadata()

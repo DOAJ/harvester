@@ -7,6 +7,17 @@ class HarvesterPlugin(object):
         raise NotImplementedError()
 
     def iterate(self, issn, since, to=None):
+        """
+        Iterate over the records associated with the issn from "since" until "to"
+
+        This should return a generator (i.e. it should yield), and it needs to yeild a tuple
+        containing (<doaj article>, <harvest date for this record>)
+
+        :param issn:
+        :param since:
+        :param to:
+        :return:
+        """
         raise NotImplementedError()
 
 class HarvestState(dataobj.DataObj, dao.HarvestStateDAO):

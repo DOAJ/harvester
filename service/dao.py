@@ -16,6 +16,11 @@ class HarvestStateDAO(dao.ESDAO):
         q = AccountQuery(account)
         return cls.scroll(q=q.query())
 
+    @classmethod
+    def example(cls):
+        from service.tests import fixtures
+        return cls(fixtures.HarvestStateFactory.harvest_state())
+
 
 class ISSNQuery(object):
     def __init__(self, account, issn):

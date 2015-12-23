@@ -55,3 +55,26 @@ If you want to specify your own root config file, you can use
 
     APP_CONFIG=path/to/rootcfg.py python service/web.py
     
+## Running the Harvester
+
+First you need to configure the runner, which means in local.cfg to put the list of accounts
+and their API keys in the API_KEYS property:
+
+    API_KEYS = {
+        "11112222" : "kjsdhjf98qr82oif293pJUWEF",
+        "22223333" : "OIWEFWOIJEFIWLKSDLKFJIOWE"
+    }
+
+You also need to set a suitable initial harvest date.  Too far in the past and you'll be wasting time
+(and EPMC resources), but too near and you'll miss things you want.  The default has been set to the start
+of December 2015 - you will probably want a much longer date than that initially.
+
+    INITIAL_HARVEST_DATE = "2015-12-01T00:00:00Z"
+
+Then you just need to start the harvester with:
+
+    python service/runner.py
+    
+This will run through each account id in the API_KEYS list, and for each one retrieve the ISSNs from
+the DOAJ, then request the articles for each of those ISSNs from EPMC, and fire it over to the DOAJ
+(authenticating with that account's API key).

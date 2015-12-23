@@ -11,7 +11,7 @@ THREADED = True
 
 # elasticsearch back-end connection settings
 ELASTIC_SEARCH_HOST = "http://localhost:9200"
-ELASTIC_SEARCH_INDEX = "db"
+ELASTIC_SEARCH_INDEX = "doajharvester"
 ELASTIC_SEARCH_VERSION = "1.4.4"
 
 # Classes from which to retrieve ES mappings to be used in this application
@@ -25,7 +25,7 @@ ELASTIC_SEARCH_MAPPINGS = [
 # this will initialise each type and auto-create the relevant mappings where
 # example data is provided
 ELASTIC_SEARCH_EXAMPLE_DOCS = [
-    # "service.dao.MyDAO"
+    "service.dao.HarvestStateDAO"
 ]
 
 ############################################
@@ -57,4 +57,10 @@ HARVESTERS = [
     "service.models.EPMCHarvester"
 ]
 
-INITIAL_HARVEST_DATE = "1970-01-01T00:00:00Z"
+INITIAL_HARVEST_DATE = "2015-12-01T00:00:00Z"
+
+# The mapping from account ids to API keys.  MUST NOT be checked into the repo, put these
+# in the local.cfg instead
+API_KEYS = {
+
+}
