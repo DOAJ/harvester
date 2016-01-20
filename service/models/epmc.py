@@ -2,6 +2,9 @@ from service.models import HarvesterPlugin
 from octopus.modules.epmc import client, queries
 from octopus.lib import dates
 from octopus.modules.doaj import models as doaj
+from octopus.core import app
+from datetime import datetime
+import time
 
 class EPMCHarvester(HarvesterPlugin):
     def get_name(self):
@@ -23,14 +26,27 @@ class EPMCHarvester(HarvesterPlugin):
         # request granularity further, which would massively increase the number
         # of requests)
         ranges = dates.day_ranges(sd, td)
+        throttle = app.config.get("EPMC_HARVESTER_THROTTLE")
 
+        last = None
         for fr, until in ranges:
+            # throttle each day
+            if last is not None and throttle is not None:
+                diff = (datetime.utcnow() - last).total_seconds()
+                app.logger.debug(u"Last day request at {x}, {y}s ago; throttle {z}s".format(x=last, y=diff, z=throttle))
+                if diff < throttle:
+                    waitfor = throttle - diff
+                    app.logger.debug(u"Throttling EPMC requests for {x}s".format(x=waitfor))
+                    time.sleep(waitfor)
+
             # build the query for the oa articles in that issn for the specified day (note we don't use the range, as the granularity in EPMC means we'd double count
             # note that we use date_sort=True as a weak proxy for ordering by updated date (it actually orders by publication date, which may be partially the same as updated date)
             query = queries.oa_issn_updated(issn, fr, date_sort=True)
-            for record in client.EuropePMC.complex_search_iterator(query):
+            for record in client.EuropePMC.complex_search_iterator(query, throttle=throttle):   # also throttle paging requests
                 article = self.crosswalk(record)
                 yield article, fr
+
+            last = datetime.utcnow()
 
     def crosswalk(self, record):
         article = doaj.Article()
