@@ -1,0 +1,14 @@
+/home/cloo/cron-logs/harvester.log {
+	weekly
+	missingok
+	rotate 52
+	compress
+	delaycompress
+	notifempty
+	dateext
+	dateyesterday
+}
+
+# rotate 52       Only keep a year's worth of logs
+# delaycompress   Compress the following time it's run, not immediately
+# dateyesterday   Logs will run up to and include the date in the filename
