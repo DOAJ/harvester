@@ -82,5 +82,7 @@ the DOAJ, then request the articles for each of those ISSNs from EPMC, and fire 
 ## Rotating the logs
 
 The harvester creates a fair amount of log output, so it's best to rotate and archive old logs using ```logrotate```.
-Copy the config from ```deploy/logrotate/doaj-harvester``` into the logrotate directory at ```/etc/logorotate.d/``` and
-it will be picked up on the next daily run of logrotate.
+Symlink the config from ```deploy/logrotate/doaj-harvester``` into the logrotate directory at ```/etc/logorotate.d/``` and
+it will be picked up on the next cron.daily run of logrotate. E.g:
+
+    ﻿sudo ln -s /full/path/to/deploy/logrotate/doaj-harvester /etc/logrotate.d/doaj-harvester
