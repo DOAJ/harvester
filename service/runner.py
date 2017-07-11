@@ -4,21 +4,21 @@ from octopus.core import app, initialise
 from setproctitle import setproctitle
 import psutil, time, datetime
 
+STARTING_PROCTITLE = 'harvester: starting'                                  # Process name while harvester is starting
+RUNNING_PROCTITLE = 'harvester: running'
+MAX_WAIT = 10                                                               # minutes we wait between terminate and kill
+
 
 def run_only_once():
-    startingproctitle = 'harvester: starting'
-    runningproctitle = 'harvester: running'
-    maxwait = 10                                                            # minutes we wait between terminate and kill
-
     # identify running harvester instances
-    setproctitle(startingproctitle)
+    setproctitle(STARTING_PROCTITLE)
     running_harvesters = []
     starting_harvesters = []
     for p in psutil.process_iter():
         try:
-            if p.cmdline()[0] == runningproctitle:
+            if p.cmdline()[0] == RUNNING_PROCTITLE:
                 running_harvesters.append(p)
-            if p.cmdline()[0] == startingproctitle:
+            if p.cmdline()[0] == STARTING_PROCTITLE:
                 starting_harvesters.append(p)
         except (psutil.AccessDenied, psutil.NoSuchProcess):
             pass
@@ -34,7 +34,7 @@ def run_only_once():
     # check if they terminated correctly
     started = datetime.datetime.utcnow()
     still_running = filter(lambda hrv: hrv.is_running(), running_harvesters)
-    while len(still_running) > 0 and datetime.datetime.utcnow() - started < datetime.timedelta(minutes=maxwait):
+    while len(still_running) > 0 and datetime.datetime.utcnow() - started < datetime.timedelta(minutes=MAX_WAIT):
         time.sleep(10)
         still_running = filter(lambda hrv: hrv.is_running(), running_harvesters)
 
@@ -44,7 +44,7 @@ def run_only_once():
         time.sleep(10)
 
     # startup complete, change process name to running
-    setproctitle(runningproctitle)
+    setproctitle(RUNNING_PROCTITLE)
 
 if __name__ == "__main__":
     run_only_once()

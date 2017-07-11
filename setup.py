@@ -6,10 +6,10 @@ setup(
     packages = find_packages(),
     install_requires = [
         "octopus==1.0.0",
-        "esprit",
-        "Flask",
-        "setproctitle",
-        "psutil"
+        "esprit==0.0.2",
+        "Flask==0.9",
+        "setproctitle==1.1.10",
+        "psutil==5.2.2"
     ],
     url = 'http://cottagelabs.com/',
     author = 'Cottage Labs',
