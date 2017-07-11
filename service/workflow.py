@@ -3,6 +3,21 @@ from service import models
 from octopus.core import app
 from octopus.lib import plugin
 
+import signal
+
+
+class CaughtTermException(Exception):
+    pass
+
+
+def term_handler(signum, frame):
+    app.logger.warning("Harvester terminated with signal " + str(signum))
+    raise CaughtTermException
+
+# Register the SIGTERM handler to raise an exception, allowing graceful exit.
+signal.signal(signal.SIGTERM, term_handler)
+
+
 class HarvesterWorkflow(object):
 
     @classmethod
@@ -74,6 +89,9 @@ class HarvesterWorkflow(object):
                     # if the above worked, then we can update the harvest state
                     if saved:
                         state.set_harvested(p.get_name(), lhd)
+        except (CaughtTermException, KeyboardInterrupt):
+            app.logger.warning(u"Harvester caught SIGTERM while processing ISSN:{x} for Account:{y} ".format(y=account_id, x=issn))
+            exit(1)
         except Exception as e:
             app.logger.info(u"Exception Processing ISSN:{x} for Account:{y} ".format(y=account_id, x=issn))
             raise
