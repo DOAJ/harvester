@@ -16,9 +16,9 @@ def run_only_once():
     starting_harvesters = []
     for p in psutil.process_iter():
         try:
-            if runningproctitle in p.cmdline():
+            if p.cmdline()[0] == runningproctitle:
                 running_harvesters.append(p)
-            if startingproctitle in p.cmdline():
+            if p.cmdline()[0] == startingproctitle:
                 starting_harvesters.append(p)
         except (psutil.AccessDenied, psutil.NoSuchProcess):
             pass
