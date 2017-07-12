@@ -62,9 +62,6 @@ if __name__ == "__main__":
         )
         flask.logging.create_logger(app)
 
-    time.sleep(300)
-    """
     accs = app.config.get("API_KEYS", {}).keys()
     for account_id in accs:
         workflow.HarvesterWorkflow.process_account(account_id)
-    """
