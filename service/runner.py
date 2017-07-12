@@ -17,9 +17,9 @@ def run_only_once():
     starting_harvesters = []
     for p in psutil.process_iter():
         try:
-            if p.cmdline()[0] == RUNNING_PROCTITLE:
+            if p.cmdline() and p.cmdline()[0] == RUNNING_PROCTITLE:
                 running_harvesters.append(p)
-            if p.cmdline()[0] == STARTING_PROCTITLE:
+            if p.cmdline() and p.cmdline()[0] == STARTING_PROCTITLE:
                 starting_harvesters.append(p)
         except (psutil.AccessDenied, psutil.NoSuchProcess):
             pass
@@ -62,6 +62,9 @@ if __name__ == "__main__":
         )
         flask.logging.create_logger(app)
 
+    time.sleep(300)
+    """
     accs = app.config.get("API_KEYS", {}).keys()
     for account_id in accs:
         workflow.HarvesterWorkflow.process_account(account_id)
+    """
