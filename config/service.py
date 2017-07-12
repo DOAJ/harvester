@@ -66,3 +66,10 @@ API_KEYS = {
 }
 
 EPMC_HARVESTER_THROTTLE = 0.2
+
+# Process name while harvester is starting, running
+STARTING_PROCTITLE = 'harvester: starting'
+RUNNING_PROCTITLE = 'harvester: running'
+
+# minutes we wait between terminate and kill
+MAX_WAIT = 10

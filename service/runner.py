@@ -5,9 +5,9 @@ import flask.logging
 from setproctitle import setproctitle
 import psutil, time, datetime
 
-STARTING_PROCTITLE = 'harvester: starting'                                  # Process name while harvester is starting
-RUNNING_PROCTITLE = 'harvester: running'
-MAX_WAIT = 10                                                               # minutes we wait between terminate and kill
+STARTING_PROCTITLE = app.config.get('STARTING_PROCTITLE', 'harvester: starting')
+RUNNING_PROCTITLE = app.config.get('RUNNING_PROCTITLE', 'harvester: running')
+MAX_WAIT = app.config.get('MAX_WAIT', 10)
 
 
 def run_only_once():
