@@ -50,8 +50,8 @@ class HarvesterWorkflow(object):
                 hs.suspend()
                 hs.save(blocking=True)
 
-    @capture_sigterm
     @classmethod
+    @capture_sigterm
     def process_issn(cls, account_id, issn):
         app.logger.info(u"Processing ISSN:{x} for Account:{y}".format(y=account_id, x=issn))
 
@@ -77,7 +77,7 @@ class HarvesterWorkflow(object):
                     # if the above worked, then we can update the harvest state
                     if saved:
                         state.set_harvested(p.get_name(), lhd)
-        except Exception as e:
+        except:
             app.logger.info(u"Exception Processing ISSN:{x} for Account:{y} ".format(y=account_id, x=issn))
             raise
         finally:
