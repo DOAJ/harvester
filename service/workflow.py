@@ -6,7 +6,8 @@ from decorators import capture_sigterm
 
 
 class HarvesterWorkflow(object):
-    starting_dates = {}
+    current_states = {}
+    last_harvest_dates_at_start_of_harvester = {}
 
     @classmethod
     def process_account(cls, account_id):
@@ -57,10 +58,10 @@ class HarvesterWorkflow(object):
         app.logger.info(u"Processing ISSN:{x} for Account:{y}".format(y=account_id, x=issn))
 
         state = models.HarvestState.find_by_issn(account_id, issn)
-
         # if this issn is suspended, don't process it
         if state.suspended:
             return
+        cls.current_states[issn] = state
 
         try:
             # get all the plugins that we need to run
@@ -71,7 +72,8 @@ class HarvesterWorkflow(object):
                 if lh is None:
                     lh = app.config.get("INITIAL_HARVEST_DATE")
                 app.logger.info(u"Processing ISSN:{x} for Account:{y} with Plugin:{z} Since:{a}".format(y=account_id, x=issn, z=p.get_name(), a=lh))
-                cls.starting_dates[issn] = lh
+                cls.last_harvest_dates_at_start_of_harvester[issn] = {}
+                cls.last_harvest_dates_at_start_of_harvester[issn][p.get_name()] = lh
 
                 for article, lhd in p.iterate(issn, lh):
                     saved = HarvesterWorkflow.process_article(account_id, article)
