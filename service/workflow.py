@@ -6,6 +6,7 @@ from decorators import capture_sigterm
 
 
 class HarvesterWorkflow(object):
+    starting_dates = {}
 
     @classmethod
     def process_account(cls, account_id):
@@ -70,6 +71,7 @@ class HarvesterWorkflow(object):
                 if lh is None:
                     lh = app.config.get("INITIAL_HARVEST_DATE")
                 app.logger.info(u"Processing ISSN:{x} for Account:{y} with Plugin:{z} Since:{a}".format(y=account_id, x=issn, z=p.get_name(), a=lh))
+                cls.starting_dates[issn] = lh
 
                 for article, lhd in p.iterate(issn, lh):
                     saved = HarvesterWorkflow.process_article(account_id, article)
