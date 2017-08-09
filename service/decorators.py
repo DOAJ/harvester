@@ -11,11 +11,11 @@ def term_handler(signum, frame):
     app.logger.warning("Harvester terminated with signal " + str(signum))
     raise CaughtTermException
 
-# Register the SIGTERM handler to raise an exception, allowing graceful exit.
-signal.signal(signal.SIGTERM, term_handler)
-
 
 def capture_sigterm(fn):
+    # Register the SIGTERM handler to raise an exception, allowing graceful exit.
+    signal.signal(signal.SIGTERM, term_handler)
+
     """ Decorator which allows graceful exit on SIGTERM """
     @wraps(fn)
     def decorated_fn(*args, **kwargs):
