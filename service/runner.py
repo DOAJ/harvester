@@ -1,5 +1,6 @@
 from service import workflow
 from octopus.core import app, initialise
+from models import HarvesterProgressReport as Report
 import flask.logging
 
 from setproctitle import setproctitle
@@ -65,3 +66,5 @@ if __name__ == "__main__":
     accs = app.config.get("API_KEYS", {}).keys()
     for account_id in accs:
         workflow.HarvesterWorkflow.process_account(account_id)
+
+    app.logger.info(Report.write_report())

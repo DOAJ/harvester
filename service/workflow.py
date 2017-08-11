@@ -3,11 +3,13 @@ from service import models
 from octopus.core import app
 from octopus.lib import plugin
 from decorators import capture_sigterm
+from models import HarvesterProgressReport as Report
 
 
 class HarvesterWorkflow(object):
 
     @classmethod
+    @capture_sigterm
     def process_account(cls, account_id):
         app.logger.info(u"Harvesting for Account:{x}".format(x=account_id))
 
@@ -56,27 +58,31 @@ class HarvesterWorkflow(object):
         app.logger.info(u"Processing ISSN:{x} for Account:{y}".format(y=account_id, x=issn))
 
         state = models.HarvestState.find_by_issn(account_id, issn)
-
         # if this issn is suspended, don't process it
         if state.suspended:
             return
+        Report.set_state_by_issn(issn, state)
 
         try:
             # get all the plugins that we need to run
             harvesters = app.config.get("HARVESTERS", [])
             for h in harvesters:
                 p = plugin.load_class(h)()
-                lh = state.get_last_harvest(p.get_name())
+                p_name = p.get_name()
+                lh = state.get_last_harvest(p_name)
                 if lh is None:
                     lh = app.config.get("INITIAL_HARVEST_DATE")
-                app.logger.info(u"Processing ISSN:{x} for Account:{y} with Plugin:{z} Since:{a}".format(y=account_id, x=issn, z=p.get_name(), a=lh))
+                app.logger.info(u"Processing ISSN:{x} for Account:{y} with Plugin:{z} Since:{a}".format(y=account_id, x=issn, z=p_name, a=lh))
+                Report.set_start_by_issn(p_name, issn, lh)
 
                 for article, lhd in p.iterate(issn, lh):
                     saved = HarvesterWorkflow.process_article(account_id, article)
+                    Report.increment_articles_processed(p_name)
 
                     # if the above worked, then we can update the harvest state
                     if saved:
-                        state.set_harvested(p.get_name(), lhd)
+                        state.set_harvested(p_name, lhd)
+                        Report.increment_articles_saved_successfully(p_name)
         except Exception:
             app.logger.info(u"Exception Processing ISSN:{x} for Account:{y} ".format(y=account_id, x=issn))
             raise
@@ -102,10 +108,14 @@ class HarvesterWorkflow(object):
         api_key = HarvesterWorkflow.get_api_key(account_id)
         doaj = doajclient.DOAJv1API(api_key=api_key)
 
-        # if this throws an exception, allow the harvester to die, because it is either
-        # systemic or the doaj is down
-        id, loc = doaj.create_article(article)
-        app.logger.info(u"Created article in DOAJ for Account:{x} with ID:{y}".format(x=account_id, y=id))
+        # if this throws an exception other than DOAJ complaint, allow the harvester to die, because it is either
+        # systemic or the doaj is down.
+        try:
+            id, loc = doaj.create_article(article)
+        except doajclient.DOAJException as e:
+            app.logger.info(u"Article caused DOAJException: {m} ... skipping".format(m=e.message))
+            return False
+        app.logger.info(u"Created article in DOAJ for Account:{x} with ID: {y}".format(x=account_id, y=id))
         return True
 
     @classmethod

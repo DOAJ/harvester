@@ -2,5 +2,5 @@
 # like this ...
 # now you can do
 # from service.models import MyObject
-from service.models.harvester import HarvesterPlugin, HarvestState
+from service.models.harvester import HarvesterPlugin, HarvestState, HarvesterProgressReport
 from service.models.epmc import EPMCHarvester
