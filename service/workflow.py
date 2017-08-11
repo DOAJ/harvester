@@ -3,13 +3,13 @@ from service import models
 from octopus.core import app
 from octopus.lib import plugin
 from decorators import capture_sigterm
+from models import HarvesterProgressReport as Report
 
 
 class HarvesterWorkflow(object):
-    current_states = {}
-    last_harvest_dates_at_start_of_harvester = {}
 
     @classmethod
+    @capture_sigterm
     def process_account(cls, account_id):
         app.logger.info(u"Harvesting for Account:{x}".format(x=account_id))
 
@@ -61,26 +61,28 @@ class HarvesterWorkflow(object):
         # if this issn is suspended, don't process it
         if state.suspended:
             return
-        cls.current_states[issn] = state
+        Report.set_state_by_issn(issn, state)
 
         try:
             # get all the plugins that we need to run
             harvesters = app.config.get("HARVESTERS", [])
             for h in harvesters:
                 p = plugin.load_class(h)()
-                lh = state.get_last_harvest(p.get_name())
+                p_name = p.get_name()
+                lh = state.get_last_harvest(p_name)
                 if lh is None:
                     lh = app.config.get("INITIAL_HARVEST_DATE")
-                app.logger.info(u"Processing ISSN:{x} for Account:{y} with Plugin:{z} Since:{a}".format(y=account_id, x=issn, z=p.get_name(), a=lh))
-                cls.last_harvest_dates_at_start_of_harvester[issn] = {}
-                cls.last_harvest_dates_at_start_of_harvester[issn][p.get_name()] = lh
+                app.logger.info(u"Processing ISSN:{x} for Account:{y} with Plugin:{z} Since:{a}".format(y=account_id, x=issn, z=p_name, a=lh))
+                Report.set_start_by_issn(p_name, issn, lh)
 
                 for article, lhd in p.iterate(issn, lh):
                     saved = HarvesterWorkflow.process_article(account_id, article)
+                    Report.increment_articles_processed(p_name)
 
                     # if the above worked, then we can update the harvest state
                     if saved:
-                        state.set_harvested(p.get_name(), lhd)
+                        state.set_harvested(p_name, lhd)
+                        Report.increment_articles_saved_successfully(p_name)
         except Exception:
             app.logger.info(u"Exception Processing ISSN:{x} for Account:{y} ".format(y=account_id, x=issn))
             raise

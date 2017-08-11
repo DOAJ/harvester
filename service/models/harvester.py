@@ -2,6 +2,7 @@ from octopus.lib import dataobj
 from service import dao
 from octopus.lib import dates
 
+
 class HarvesterPlugin(object):
     def get_name(self):
         raise NotImplementedError()
@@ -19,6 +20,7 @@ class HarvesterPlugin(object):
         :return:
         """
         raise NotImplementedError()
+
 
 class HarvestState(dataobj.DataObj, dao.HarvestStateDAO):
     def __init__(self, raw=None):
@@ -112,6 +114,61 @@ class HarvestState(dataobj.DataObj, dao.HarvestStateDAO):
     def prep(self):
         if self.status is None:
             self.status = "active"
+
+
+class HarvesterProgressReport(object):
+    current_states = {}
+    last_harvest_dates_at_start_of_harvester = {}
+    articles_processed = {}
+    articles_saved_successfully = {}
+    harvester_started = dates.now()
+
+    @classmethod
+    def set_start_by_issn(cls, plugin, issn, date):
+        try:
+            cls.last_harvest_dates_at_start_of_harvester[plugin][issn] = date
+        except KeyError:
+            cls.last_harvest_dates_at_start_of_harvester[plugin] = {issn: date}
+
+    @classmethod
+    def set_state_by_issn(cls, issn, state):
+        cls.current_states[issn] = state
+
+    @classmethod
+    def increment_articles_processed(cls, plugin):
+        try:
+            cls.articles_processed[plugin] += 1
+        except KeyError:
+            cls.articles_processed[plugin] = 1
+
+    @classmethod
+    def increment_articles_saved_successfully(cls, plugin):
+        try:
+            cls.articles_saved_successfully[plugin] += 1
+        except KeyError:
+            cls.articles_saved_successfully[plugin] = 1
+
+    @classmethod
+    def write_report(cls):
+        report = ["Harvester run from {d1} to {d2}.".format(d1=cls.harvester_started, d2=dates.now())]
+        try:
+            for p_name in cls.last_harvest_dates_at_start_of_harvester.keys():
+                report.append("Plugin {p} harvested {n_total} articles. {n_succ} saved successfully to DOAJ; {n_fail} failed.".format(
+                    p=p_name,
+                    n_total=cls.articles_processed[p_name],
+                    n_succ= cls.articles_saved_successfully[p_name],
+                    n_fail=cls.articles_processed[p_name] - cls.articles_saved_successfully[p_name]
+                ))
+
+                for issn in cls.last_harvest_dates_at_start_of_harvester[p_name].keys():
+                    report.append("ISSN {i} processed period {d1} until {d2}.".format(
+                        i=issn,
+                        d1=cls.last_harvest_dates_at_start_of_harvester[p_name][issn],
+                        d2=cls.current_states[issn].get_last_harvest(p_name)
+                    ))
+        except KeyError:
+            report.append("Nothing to report.")
+        return "\n".join(report)
 
 
 
