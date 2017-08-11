@@ -108,10 +108,14 @@ class HarvesterWorkflow(object):
         api_key = HarvesterWorkflow.get_api_key(account_id)
         doaj = doajclient.DOAJv1API(api_key=api_key)
 
-        # if this throws an exception, allow the harvester to die, because it is either
-        # systemic or the doaj is down
-        id, loc = doaj.create_article(article)
-        app.logger.info(u"Created article in DOAJ for Account:{x} with ID:{y}".format(x=account_id, y=id))
+        # if this throws an exception other than DOAJ complaint, allow the harvester to die, because it is either
+        # systemic or the doaj is down.
+        try:
+            id, loc = doaj.create_article(article)
+        except doajclient.DOAJException as e:
+            app.logger.info(u"Article caused DOAJException: {m} ... skipping".format(m=e.message))
+            return False
+        app.logger.info(u"Created article in DOAJ for Account:{x} with ID: {y}".format(x=account_id, y=id))
         return True
 
     @classmethod

@@ -150,25 +150,20 @@ class HarvesterProgressReport(object):
 
     @classmethod
     def write_report(cls):
-        report = ["Harvester run from {d1} to {d2}.".format(d1=cls.harvester_started, d2=dates.now())]
-        try:
-            for p_name in cls.last_harvest_dates_at_start_of_harvester.keys():
-                report.append("Plugin {p} harvested {n_total} articles. {n_succ} saved successfully to DOAJ; {n_fail} failed.".format(
-                    p=p_name,
-                    n_total=cls.articles_processed[p_name],
-                    n_succ= cls.articles_saved_successfully[p_name],
-                    n_fail=cls.articles_processed[p_name] - cls.articles_saved_successfully[p_name]
+        report = [u"Harvester ran from {d1} to {d2}.".format(d1=cls.harvester_started, d2=dates.now())]
+        for p_name in cls.last_harvest_dates_at_start_of_harvester.keys():
+            report.append(u"Plugin {p} harvested {n_total} articles. "
+                          u"{n_succ} saved successfully to DOAJ; {n_fail} failed.".format(
+                p=p_name,
+                n_total=cls.articles_processed.get(p_name, 0),
+                n_succ= cls.articles_saved_successfully.get(p_name, 0),
+                n_fail=cls.articles_processed.get(p_name, 0) - cls.articles_saved_successfully.get(p_name, 0)
+            ))
+
+            for issn in cls.last_harvest_dates_at_start_of_harvester[p_name].keys():
+                report.append(u"ISSN {i} processed period {d1} until {d2}.".format(
+                    i=issn,
+                    d1=cls.last_harvest_dates_at_start_of_harvester[p_name][issn],
+                    d2=cls.current_states[issn].get_last_harvest(p_name)
                 ))
-
-                for issn in cls.last_harvest_dates_at_start_of_harvester[p_name].keys():
-                    report.append("ISSN {i} processed period {d1} until {d2}.".format(
-                        i=issn,
-                        d1=cls.last_harvest_dates_at_start_of_harvester[p_name][issn],
-                        d2=cls.current_states[issn].get_last_harvest(p_name)
-                    ))
-        except KeyError:
-            report.append("Nothing to report.")
         return "\n".join(report)
-
-
-
