@@ -24,4 +24,4 @@ SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 # m     h   dom     mon     dow    command
-30      5   *       *       1      cd /home/cloo/harvester/src/harvester && export NOW=`date +\%F_\%H\%M\%S` ; echo -e "\n\nstart timestamp $NOW" >> /home/cloo/cron-logs/harvester.log && /home/cloo/harvester/bin/python /home/cloo/harvester/src/harvester/service/runner.py >> /home/cloo/cron-logs/harvester.log 2>&1 2>&1
+30      5   *       *       *      cd /home/cloo/harvester/src/harvester && export NOW=`date +\%F_\%H\%M\%S` ; echo -e "\n\nstart timestamp $NOW" >> /home/cloo/cron-logs/harvester.log && /home/cloo/harvester/bin/python /home/cloo/harvester/src/harvester/service/runner.py >> /home/cloo/cron-logs/harvester.log 2>&1 2>&1
