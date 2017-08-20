@@ -71,5 +71,9 @@ EPMC_HARVESTER_THROTTLE = 0.2
 STARTING_PROCTITLE = 'harvester: starting'
 RUNNING_PROCTITLE = 'harvester: running'
 
-# minutes we wait between terminate and kill
+# Minutes we wait between terminate and kill
 MAX_WAIT = 10
+
+# Email notifications
+EMAIL_ON_EVENT = False
+EMAIL_RECIPIENTS = None
