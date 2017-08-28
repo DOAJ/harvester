@@ -1,5 +1,5 @@
 from functools import wraps
-import signal
+import signal, datetime
 from octopus.core import app
 from models import HarvesterProgressReport as Report
 
@@ -24,7 +24,19 @@ def capture_sigterm(fn):
             fn(*args, **kwargs)
         except (CaughtTermException, KeyboardInterrupt):
             app.logger.warning(u"Harvester caught SIGTERM. Exiting.")
-            app.logger.info(Report.write_report())
+            report = Report.write_report()
+            if app.config.get("EMAIL_ON_EVENT", False):
+                to = app.config.get("EMAIL_RECIPIENTS", None)
+
+                if to is not None:
+                    from octopus.lib import mail
+                    mail.send_mail(
+                        to=app.config["EMAIL_RECIPIENTS"],
+                        subject="DOAJ Harvester caught SIGTERM at {0}".format(
+                            datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")),
+                        msg_body=report
+                    )
+            app.logger.info(report)
             exit(1)
 
     return decorated_fn
