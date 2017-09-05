@@ -31,6 +31,7 @@ def run_only_once():
 
     # Send SIGTERM to all extant instances of the harvester.
     if len(running_harvesters) > 0:
+        print "Sending SIGTERM to extant harvester instances."
         [h.terminate() for h in running_harvesters]
 
     # Check if they terminated correctly
@@ -42,6 +43,7 @@ def run_only_once():
 
     # Move on to killing the processes if they don't respond to terminate
     if len(still_running) > 0:
+        print "Old Harvesters are still running. Escalating to SIGKILL."
         [h.kill() for h in running_harvesters]
         time.sleep(10)
 
