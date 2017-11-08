@@ -56,10 +56,21 @@ class EPMCHarvester(HarvesterPlugin):
         bj.journal = {}
         journal = bj.journal
 
+        # sort out the issns - EPMC sometimes puts the same value in the issn and essn fields.  I guess this is
+        # because they regard the issn to be the essn if there is no print issn.  This little trick below extracts
+        # the values to pissn and eissn, and then if they are the same, gets rid of the pissn.
+        pissn = record.issn
+        eissn = record.essn
+        if pissn == eissn:
+            pissn = None
+
+        if pissn is not None:
+            article.add_identifier("pissn", pissn)
+        if eissn is not None:
+            article.add_identifier("eissn", eissn)
+
         bj.title = record.title
         article.add_identifier("doi", record.doi)
-        article.add_identifier("pissn", record.issn)
-        article.add_identifier("eissn", record.essn)
         journal.volume = record.journal_volume
         journal.number = record.journal_issue
         journal.title = record.journal
