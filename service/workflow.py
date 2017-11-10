@@ -20,7 +20,7 @@ class HarvesterWorkflow(object):
             issns += journal.all_issns()
         issns = list(set(issns))
 
-        app.logger.info(u"Account:{x} has {y} issns to harvest for".format(x=account_id, y=len(issns)))
+        app.logger.info(u"Account:{x} has {y} issns to harvest for: {z}".format(x=account_id, y=len(issns), z=",".join(issns)))
 
         # now update the issn states
         HarvesterWorkflow.process_issn_states(account_id, issns)

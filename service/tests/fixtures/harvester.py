@@ -8,7 +8,7 @@ class HarvestStateFactory(object):
 
 STATE = {
     "id" : "oqwiwfqwjfwejfw",
-    "create_date": "1970-01-01T00:00:00Z",
+    "created_date": "1970-01-01T00:00:00Z",
     "last_updated" : "1970-01-01T00:00:00Z",
     "issn" : "1234-5678",
     "account" : "123456789",

@@ -1,5 +1,5 @@
 """
-Unit tests for the DOAJ client
+Unit tests for the Harvest State mechanics
 """
 
 from octopus.modules.es.testindex import ESTestCase
