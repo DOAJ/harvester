@@ -11,7 +11,7 @@ THREADED = True
 
 # elasticsearch back-end connection settings
 ELASTIC_SEARCH_HOST = "http://localhost:9200"
-ELASTIC_SEARCH_INDEX = "db"
+ELASTIC_SEARCH_INDEX = "doajharvester"
 ELASTIC_SEARCH_VERSION = "1.4.4"
 
 # Classes from which to retrieve ES mappings to be used in this application
@@ -25,7 +25,7 @@ ELASTIC_SEARCH_MAPPINGS = [
 # this will initialise each type and auto-create the relevant mappings where
 # example data is provided
 ELASTIC_SEARCH_EXAMPLE_DOCS = [
-    # "service.dao.MyDAO"
+    "service.dao.HarvestStateDAO"
 ]
 
 ############################################
@@ -43,3 +43,37 @@ SECRET_KEY = "super-secret-key"
 from octopus.lib import paths
 STORE_LOCAL_DIR = paths.rel2abs(__file__, "..", "service", "tests", "local_store", "live")
 STORE_TMP_DIR = paths.rel2abs(__file__, "..", "service", "tests", "local_store", "tmp")
+
+##############################################
+# DOAJ client configuration
+
+# this is the default anyway, but reminds us to point it to the right place for testing
+DOAJ_API_BASE_URL = "https://doaj.org/api/v1/"
+
+##############################################
+# Application-specific configuration
+
+HARVESTERS = [
+    "service.models.EPMCHarvester"
+]
+
+INITIAL_HARVEST_DATE = "2015-12-01T00:00:00Z"
+
+# The mapping from account ids to API keys.  MUST NOT be checked into the repo, put these
+# in the local.cfg instead
+API_KEYS = {
+
+}
+
+EPMC_HARVESTER_THROTTLE = 0.2
+
+# Process name while harvester is starting, running
+STARTING_PROCTITLE = 'harvester: starting'
+RUNNING_PROCTITLE = 'harvester: running'
+
+# Minutes we wait between terminate and kill
+MAX_WAIT = 10
+
+# Email notifications
+EMAIL_ON_EVENT = False
+EMAIL_RECIPIENTS = None
