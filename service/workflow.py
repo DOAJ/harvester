@@ -84,7 +84,7 @@ class HarvesterWorkflow(object):
                         state.set_harvested(p_name, lhd)
                         Report.increment_articles_saved_successfully(p_name)
         except Exception:
-            app.logger.info(u"Exception Processing ISSN:{x} for Account:{y} ".format(y=account_id, x=issn))
+            app.logger.error(u"Exception Processing ISSN:{x} for Account:{y} ".format(y=account_id, x=issn))
             raise
         finally:
             # once we've finished working with this issn, we should update the state
@@ -99,7 +99,8 @@ class HarvesterWorkflow(object):
         app.logger.info(u"Processing Article for Account:{y}".format(y=account_id))
 
         if not article.is_api_valid():
-            app.logger.info(u"Article for Account:{y} was not API valid ... skipping".format(y=account_id))
+            app.logger.error(u"Article for Account:{y} was not API valid ... skipping".format(y=account_id))
+            app.logger.error(str(article.json()))
             return False
 
         # FIXME: in production, we will need a way to get the account_id's api_key
@@ -113,7 +114,7 @@ class HarvesterWorkflow(object):
         try:
             id, loc = doaj.create_article(article)
         except doajclient.DOAJException as e:
-            app.logger.info(u"Article caused DOAJException: {m} ... skipping".format(m=e.message))
+            app.logger.error(u"Article caused DOAJException: {m} ... skipping".format(m=e.message))
             return False
         app.logger.info(u"Created article in DOAJ for Account:{x} with ID: {y}".format(x=account_id, y=id))
         return True
