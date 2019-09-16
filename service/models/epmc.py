@@ -83,10 +83,17 @@ class EPMCHarvester(HarvesterPlugin):
         bj.abstract = record.abstract
 
         for a in record.authors:
+            cn = a.get("collectiveName")
             fn = a.get("firstName")
             ln = a.get("lastName")
-            if fn is None and ln is None:
-                continue
+
+            if fn is None and ln is None and cn is None:
+                # FIXME: hacking this for the moment, but the correct solution is to update the EPMC client library
+                # which we will do when we port the code over to the main DOAJ codebase
+                fn = record._get_single("authorString")
+                if fn is None:
+                    continue
+
             n = ""
             if fn is not None:
                 n += fn
