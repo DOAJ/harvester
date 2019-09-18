@@ -95,7 +95,11 @@ class EPMCHarvester(HarvesterPlugin):
                     continue
 
             n = ""
+            if cn is not None:
+                n += cn
             if fn is not None:
+                if n != "":
+                    n += " "
                 n += fn
             if ln is not None:
                 if n != "":
