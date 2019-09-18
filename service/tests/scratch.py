@@ -18,5 +18,7 @@ initialise()
 
 from service.workflow import HarvesterWorkflow
 from service.models import HarvesterProgressReport
-HarvesterWorkflow.process_issn("15449173", "1932-6203")
-print(HarvesterProgressReport.write_report())
+try:
+    HarvesterWorkflow.process_issn("15449173", "1932-6203")
+finally:
+    print(HarvesterProgressReport.write_report())
