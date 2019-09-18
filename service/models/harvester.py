@@ -122,6 +122,7 @@ class HarvesterProgressReport(object):
     articles_processed = {}
     articles_saved_successfully = {}
     harvester_started = dates.now()
+    error_messages = []
 
     @classmethod
     def set_start_by_issn(cls, plugin, issn, date):
@@ -149,6 +150,10 @@ class HarvesterProgressReport(object):
             cls.articles_saved_successfully[plugin] = 1
 
     @classmethod
+    def record_error(cls, msg):
+        cls.error_messages.append(msg)
+
+    @classmethod
     def write_report(cls):
         report = [u"Harvester ran from {d1} to {d2}.".format(d1=cls.harvester_started, d2=dates.now())]
         for p_name in cls.last_harvest_dates_at_start_of_harvester.keys():
@@ -166,4 +171,6 @@ class HarvesterProgressReport(object):
                     d1=cls.last_harvest_dates_at_start_of_harvester[p_name][issn],
                     d2=cls.current_states[issn].get_last_harvest(p_name)
                 ))
+        report.append(u"Error messages/import failures:")
+        report += cls.error_messages
         return "\n".join(report)
