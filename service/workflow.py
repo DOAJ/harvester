@@ -100,6 +100,12 @@ class HarvesterWorkflow(object):
 
         if not article.is_api_valid():
             app.logger.info(u"Article for Account:{y} was not API valid ... skipping".format(y=account_id))
+
+            try:
+                doajclient.models.ArticleValidator(article.data)
+            except Exception as e:
+                Report.record_error(article.get_identifier("doi") + u" - " + e.message)
+
             return False
 
         # FIXME: in production, we will need a way to get the account_id's api_key
@@ -114,6 +120,7 @@ class HarvesterWorkflow(object):
             id, loc = doaj.create_article(article)
         except doajclient.DOAJException as e:
             app.logger.info(u"Article caused DOAJException: {m} ... skipping".format(m=e.message))
+            Report.record_error(article.get_identifier("doi") + u" - " + e.message)
             return False
         app.logger.info(u"Created article in DOAJ for Account:{x} with ID: {y}".format(x=account_id, y=id))
         return True
