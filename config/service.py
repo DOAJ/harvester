@@ -51,6 +51,12 @@ STORE_TMP_DIR = paths.rel2abs(__file__, "..", "service", "tests", "local_store",
 DOAJ_API_BASE_URL = "https://doaj.org/api/v1/"
 
 ##############################################
+# EPMC Client configuration overrides
+
+EPMC_TARGET_VERSION = "6.1"
+
+
+##############################################
 # Application-specific configuration
 
 HARVESTERS = [
