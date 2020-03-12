@@ -9,7 +9,7 @@ setup(
         "esprit==0.0.2",
         "Flask==0.9",
         "setproctitle==1.1.10",
-        "psutil==5.2.2"
+        "psutil==5.6.6"
     ],
     url = 'http://cottagelabs.com/',
     author = 'Cottage Labs',
